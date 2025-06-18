@@ -1,0 +1,4 @@
+CREATE TABLE measurements (
+    timestamp DATETIME PRIMARY KEY DEFAULT CURRENT_TIME,
+    value FLOAT NOT NULL
+);

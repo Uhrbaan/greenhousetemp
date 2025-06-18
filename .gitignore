@@ -1,0 +1,54 @@
+# Go binaries and object files
+*.exe
+*.o
+*.obj
+*.test
+*.prof
+
+# IDE and editor files
+.idea/
+.vscode/
+.DS_Store
+
+# Logs and runtime data
+*.log
+*.tmp
+
+# SQLite database file
+*.db
+
+
+# Gradle files
+.gradle/
+build/
+
+# AVD (Android Virtual Device) files
+.android/avd/
+
+# Generated files by Android build system
+.cxx/
+*.iml 
+*.ap_
+*.apk
+*.aab 
+
+# Keystore files (used for signing release builds - NEVER commit these!)
+*.jks
+*.keystore
+
+# External native build (CMake, NDK-Build)
+.externalNativeBuild/
+
+# Instant Run files
+.idea/instant-run/
+captures/
+
+# Android Studio logs
+studio.log
+
+# Crashlytics/Fabric files
+crashlytics-build.properties
+fabric.properties
+
+# Kotlin DSL (if used in build.gradle.kts)
+.gradle-kts/
