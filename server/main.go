@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"encoding/json"
 
 	"database/sql"
 
@@ -27,10 +27,10 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) receiveData(w http.ResponseWriter, r *http.Request) {
 	log.Println("Got a POST request !")
-	
+
 	body := struct {
 		Temperature *float64 `json:"temperature"`
-		Humidity *float64 `json:"humidity"`
+		Humidity    *float64 `json:"humidity"`
 	}{}
 
 	err := json.NewDecoder(r.Body).Decode(&body)
@@ -47,7 +47,7 @@ func (app *application) receiveData(w http.ResponseWriter, r *http.Request) {
 	// valid json data -> inserting into database
 	err = app.Repo.AddMeasurement(context.Background(), db.AddMeasurementParams{
 		Temperature: *body.Temperature,
-		Humidity: *body.Humidity,
+		Humidity:    *body.Humidity,
 	})
 	if err != nil {
 		http.Error(w, "The data could not be stored sucessfully.", http.StatusInternalServerError)
@@ -64,25 +64,31 @@ func (app *application) receiveData(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// load database
 	database, err := sql.Open("sqlite", "file:./db/database.db")
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer database.Close()
 	repo := db.New(database)
 
 	// apply database migration (if any)
 	driver, err := sqlite.WithInstance(database, &sqlite.Config{})
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	migration, err := migrate.NewWithDatabaseInstance("file:./db/migrations", "sqlite", driver)
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 	err = migration.Up()
 
 	if err != nil && err != migrate.ErrNoChange {
-        log.Fatalf("FATAL: Failed to apply migrations: %v", err) // Stop on real error
-    } else if err == migrate.ErrNoChange {
-        log.Println("INFO: No new migrations to apply.") // Informative, not an error
-    } else {
-        log.Println("INFO: Migrations applied successfully!") // Success message
-    }
+		log.Fatalf("FATAL: Failed to apply migrations: %v", err) // Stop on real error
+	} else if err == migrate.ErrNoChange {
+		log.Println("INFO: No new migrations to apply.") // Informative, not an error
+	} else {
+		log.Println("INFO: Migrations applied successfully!") // Success message
+	}
 
 	app := application{
 		Repo: repo,
@@ -93,7 +99,7 @@ func main() {
 	router.HandleFunc("POST /", app.receiveData)
 
 	server := http.Server{
-		Addr: ":8080",
+		Addr:    ":8080",
 		Handler: router,
 	}
 
