@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,51 +13,8 @@ import (
 	_ "modernc.org/sqlite"
 
 	"server/internal/db"
+	"server/internal/handlers"
 )
-
-type application struct {
-	Repo *db.Queries
-}
-
-func handleRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello ! welcome to my website")
-}
-
-func (app *application) receiveData(w http.ResponseWriter, r *http.Request) {
-	log.Println("Got a POST request !")
-
-	body := struct {
-		Temperature *float64 `json:"temperature"`
-		Humidity    *float64 `json:"humidity"`
-	}{}
-
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		http.Error(w, "Invalid JSON.", http.StatusBadRequest)
-		return
-	}
-
-	if body.Temperature == nil || body.Humidity == nil {
-		http.Error(w, "temperature and or humidity fields are missing.", http.StatusBadRequest)
-		return
-	}
-
-	// valid json data -> inserting into database
-	err = app.Repo.AddMeasurement(context.Background(), db.AddMeasurementParams{
-		Temperature: *body.Temperature,
-		Humidity:    *body.Humidity,
-	})
-	if err != nil {
-		http.Error(w, "The data could not be stored sucessfully.", http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	fmt.Fprintln(w, "Measurements received and stored successfully!")
-
-	measurements, _ := json.Marshal(body)
-	log.Printf("INFO: Received and stored data sucessfully: %s\n", measurements)
-}
 
 func main() {
 	// load database
@@ -90,13 +45,13 @@ func main() {
 		log.Println("INFO: Migrations applied successfully!") // Success message
 	}
 
-	app := application{
+	app := handlers.Application{
 		Repo: repo,
 	}
 
 	router := http.NewServeMux()
-	router.HandleFunc("/", handleRoot)
-	router.HandleFunc("POST /", app.receiveData)
+	router.HandleFunc("/", app.HandleRoot)
+	router.HandleFunc("POST /", app.ReceiveData)
 
 	server := http.Server{
 		Addr:    ":8080",
