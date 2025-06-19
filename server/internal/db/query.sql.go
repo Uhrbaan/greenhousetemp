@@ -7,11 +7,25 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
+const addMeasurement = `-- name: AddMeasurement :exec
+INSERT INTO measurements (temperature, humidity)
+VALUES (?, ?)
+`
+
+type AddMeasurementParams struct {
+	Temperature float64 `json:"temperature"`
+	Humidity    float64 `json:"humidity"`
+}
+
+func (q *Queries) AddMeasurement(ctx context.Context, arg AddMeasurementParams) error {
+	_, err := q.db.ExecContext(ctx, addMeasurement, arg.Temperature, arg.Humidity)
+	return err
+}
+
 const selectAllMeasurements = `-- name: SelectAllMeasurements :many
-SELECT timestamp, value FROM measurements
+SELECT timestamp, temperature, humidity FROM measurements
 `
 
 func (q *Queries) SelectAllMeasurements(ctx context.Context) ([]Measurement, error) {
@@ -23,7 +37,7 @@ func (q *Queries) SelectAllMeasurements(ctx context.Context) ([]Measurement, err
 	var items []Measurement
 	for rows.Next() {
 		var i Measurement
-		if err := rows.Scan(&i.Timestamp, &i.Value); err != nil {
+		if err := rows.Scan(&i.Timestamp, &i.Temperature, &i.Humidity); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -38,17 +52,14 @@ func (q *Queries) SelectAllMeasurements(ctx context.Context) ([]Measurement, err
 }
 
 const selectLatestMeasurement = `-- name: SelectLatestMeasurement :one
-SELECT MAX(timestamp), value FROM measurements LIMIT 1
+SELECT timestamp, temperature, humidity FROM measurements
+ORDER BY timestamp DESC 
+LIMIT 1
 `
 
-type SelectLatestMeasurementRow struct {
-	Max   interface{}
-	Value sql.NullFloat64
-}
-
-func (q *Queries) SelectLatestMeasurement(ctx context.Context) (SelectLatestMeasurementRow, error) {
+func (q *Queries) SelectLatestMeasurement(ctx context.Context) (Measurement, error) {
 	row := q.db.QueryRowContext(ctx, selectLatestMeasurement)
-	var i SelectLatestMeasurementRow
-	err := row.Scan(&i.Max, &i.Value)
+	var i Measurement
+	err := row.Scan(&i.Timestamp, &i.Temperature, &i.Humidity)
 	return i, err
 }

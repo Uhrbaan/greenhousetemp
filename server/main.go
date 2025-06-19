@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"encoding/json"
 
 	"database/sql"
 
@@ -16,47 +17,63 @@ import (
 	"server/internal/db"
 )
 
+type application struct {
+	Repo *db.Queries
+}
+
 func handleRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello ! welcome to my website @ %s", r.URL.Path[1:])
+	fmt.Fprintf(w, "Hello ! welcome to my website")
+}
+
+func (app *application) receiveData(w http.ResponseWriter, r *http.Request) {
+	log.Println("Got a POST request !")
+	
+	body := struct {
+		Temperature *float64 `json:"temperature"`
+		Humidity *float64 `json:"humidity"`
+	}{}
+
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		http.Error(w, "Invalid JSON.", http.StatusBadRequest)
+		return
+	}
+
+	if body.Temperature == nil || body.Humidity == nil {
+		http.Error(w, "temperature and or humidity fields are missing.", http.StatusBadRequest)
+		return
+	}
+
+	// valid json data -> inserting into database
+	err = app.Repo.AddMeasurement(context.Background(), db.AddMeasurementParams{
+		Temperature: *body.Temperature,
+		Humidity: *body.Humidity,
+	})
+	if err != nil {
+		http.Error(w, "The data could not be stored sucessfully.", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprintln(w, "Measurements received and stored successfully!")
+
+	measurements, _ := json.Marshal(body)
+	log.Printf("INFO: Received and stored data sucessfully: %s\n", measurements)
 }
 
 func main() {
-	fmt.Println("Hello, world !")
-	log.Println("Starting the web server.")
-
-	ctx := context.Background()
-
-	// open the database
+	// load database
 	database, err := sql.Open("sqlite", "file:./db/database.db")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("The database was opened successfully !")
-
+	if err != nil { log.Fatal(err) }
 	defer database.Close()
+	repo := db.New(database)
 
-	// get golang-migrate specific drivers for the db
+	// apply database migration (if any)
 	driver, err := sqlite.WithInstance(database, &sqlite.Config{})
+	if err != nil { log.Fatal(err) }
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("The driver for sqlite was loaded successfully !")
-
-	// initialize golang-migrate
-	migration, err := migrate.NewWithDatabaseInstance(
-		"file:./db/migrations",
-		"sqlite",
-		driver,
-	)
-	
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Successfully started golang-migrate !")
-
-	// update database if needed
+	migration, err := migrate.NewWithDatabaseInstance("file:./db/migrations", "sqlite", driver)
+	if err != nil { log.Fatal(err) }
 	err = migration.Up()
 
 	if err != nil && err != migrate.ErrNoChange {
@@ -67,22 +84,18 @@ func main() {
         log.Println("INFO: Migrations applied successfully!") // Success message
     }
 
+	app := application{
+		Repo: repo,
+	}
+
 	router := http.NewServeMux()
 	router.HandleFunc("/", handleRoot)
+	router.HandleFunc("POST /", app.receiveData)
 
 	server := http.Server{
 		Addr: ":8080",
 		Handler: router,
 	}
-
-	repo := db.New(database)
-	row, err := repo.SelectLatestMeasurement(ctx)
-	
-	if err != nil {
-		log.Print("The database query failed.")
-	}
-
-	fmt.Printf("%v was measured at %v\n", row.Value, row.Max)
 
 	fmt.Println("Server listening on port :8080")
 	server.ListenAndServe()

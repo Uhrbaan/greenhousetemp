@@ -5,11 +5,11 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 )
 
 type Measurement struct {
-	Timestamp time.Time
-	Value     sql.NullFloat64
+	Timestamp   time.Time `json:"timestamp"`
+	Temperature float64   `json:"temperature"`
+	Humidity    float64   `json:"humidity"`
 }

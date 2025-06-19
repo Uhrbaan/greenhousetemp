@@ -16,7 +16,7 @@ WITH RECURSIVE
 -- Insert the generated data into the measurements table.
 INSERT INTO measurements (timestamp, temperature, humidity)
 SELECT
-  DATETIME('now', '+' || (n * 5) || ' minutes'),
+  DATETIME('now', 'localtime', '-' || (n * 5) || ' minutes'),
   18.0 + (ABS(RANDOM()) * 1.0 / 9223372036854775807.0) * (36.0 - 18.0),
   20.0 + (ABS(RANDOM()) * 1.0 / 9223372036854775807.0) * (90.0 - 20.0)
 FROM time_series;
