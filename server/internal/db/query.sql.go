@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const addMeasurement = `-- name: AddMeasurement :exec
@@ -62,4 +63,38 @@ func (q *Queries) SelectLatestMeasurement(ctx context.Context) (Measurement, err
 	var i Measurement
 	err := row.Scan(&i.Timestamp, &i.Temperature, &i.Humidity)
 	return i, err
+}
+
+const selectRangeMeasurements = `-- name: SelectRangeMeasurements :many
+SELECT timestamp, temperature, humidity FROM measurements
+WHERE timestamp > ?1
+AND timestamp < ?2
+`
+
+type SelectRangeMeasurementsParams struct {
+	From time.Time `json:"from"`
+	To   time.Time `json:"to"`
+}
+
+func (q *Queries) SelectRangeMeasurements(ctx context.Context, arg SelectRangeMeasurementsParams) ([]Measurement, error) {
+	rows, err := q.db.QueryContext(ctx, selectRangeMeasurements, arg.From, arg.To)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Measurement
+	for rows.Next() {
+		var i Measurement
+		if err := rows.Scan(&i.Timestamp, &i.Temperature, &i.Humidity); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

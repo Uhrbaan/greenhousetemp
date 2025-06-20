@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 
 	"database/sql"
 
@@ -45,13 +46,24 @@ func main() {
 		log.Println("INFO: Migrations applied successfully!") // Success message
 	}
 
-	app := handlers.Application{
-		Repo: repo,
+	app := handlers.Application{Repo: repo}
+
+	// configure static files directory access
+	staticDir, err := filepath.Abs("./web/static")
+	if err != nil {
+		log.Fatal("Could not access ./web/static")
 	}
 
+	staticFileServer := http.FileServer(http.Dir(staticDir))
+
 	router := http.NewServeMux()
-	router.HandleFunc("/", app.HandleRoot)
-	router.HandleFunc("POST /", app.ReceiveData)
+	router.HandleFunc("GET /", app.HandleRoot)
+
+	router.HandleFunc("POST /data/", app.PostData)
+	router.HandleFunc("GET /data/latest/", app.GetLatest)
+	router.HandleFunc("GET /data/", app.GetRange) // </data/?from=date&to=date>
+
+	router.Handle("GET /static/", http.StripPrefix("/static/", staticFileServer))
 
 	server := http.Server{
 		Addr:    ":8080",

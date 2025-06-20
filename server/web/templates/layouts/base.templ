@@ -1,39 +1,38 @@
 package layouts
 
-import (
-    "html/template"
-    "github.com/a-h/templ"
-)
+// import "server/web/templates/components"
 
-templ header() {
+templ Header() {
     <header>
+        Banner
     </header>
 }
 
-templ main() {
-    <main></main>
+templ Main() {
+    <main>
+    <p>Hello, world !</p>
+    </main>
 }
 
-templ footer() {
-    <footer></footer>
+templ Footer() {
+    <footer>
+    Footer
+    </footer>
 }
 
 templ Base(title string) {
     <!DOCTYPE html>
     <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta http-equiv="X-UA-Compatible" content="ie=edge">
-            <meta name="theme-color" content="">
-            <link rel="shortcut icon" href="">
-            <link rel="stylesheet" href="">
-            <title>Document</title>
-        </head>
-        <body>
-            @header()
-            @main()
-            @footer()
-        </body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{ title }</title>
+        <link rel="stylesheet" href="/static/css/main.css"/>
+    </head>
+    <body>
+        @Header()
+        @Main()
+        @Footer()
+    </body>
     </html>
 }
