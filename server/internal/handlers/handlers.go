@@ -1,16 +1,18 @@
 package handlers
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"encoding/json"
-	"context"
-	"time"
 	"server/internal/db"
+	"time"
+
 	// "server/web/templates/components"
 	// "server/web/templates/pages"
-	"server/web/templates/layouts"
+	// "server/web/templates/layouts"
+	"server/web/templates/pages"
 )
 
 type Application struct {
@@ -18,7 +20,7 @@ type Application struct {
 }
 
 func (app *Application) HandleRoot(w http.ResponseWriter, r *http.Request) {
-	basic := layouts.Base("welcome")
+	basic := pages.Index("welcome")
 	basic.Render(context.Background(), w)
 }
 
@@ -81,6 +83,8 @@ func (app *Application) GetRange(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) PostData(w http.ResponseWriter, r *http.Request) {
+	log.Printf("INFO: Got new data: %v\n", r.Header)
+
 	body := struct {
 		Temperature *float64 `json:"temperature"`
 		Humidity *float64 `json:"humidity"`

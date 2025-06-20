@@ -1,0 +1,17 @@
+package components
+
+templ Send() {
+    <form x-data="sendData" @submit.prevent="submitForm()">
+    <div>
+    <label for="temperature">Température: </label>
+    <input type="range" step="0.1" min="0" max="40" name="temperature" id="temperature" x-model="formData.temperature" required/>
+    <span x-text="formData.temperature"></span>
+    </div>
+    <div>
+    <label for="humidity">Humidité (%): </label>
+    <input type="range" step="1" min="0" max="100" name="humidity" id="humidity" x-model="formData.humidity" required/>
+    <span x-text="formData.humidity"></span>
+    </div>
+    <input type="submit">
+    </form>
+}

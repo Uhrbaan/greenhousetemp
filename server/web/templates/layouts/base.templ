@@ -1,38 +1,21 @@
 package layouts
 
-// import "server/web/templates/components"
-
-templ Header() {
-    <header>
-        Banner
-    </header>
-}
-
-templ Main() {
-    <main>
-    <p>Hello, world !</p>
-    </main>
-}
-
-templ Footer() {
-    <footer>
-    Footer
-    </footer>
-}
-
 templ Base(title string) {
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{ title }</title>
-        <link rel="stylesheet" href="/static/css/main.css"/>
-    </head>
-    <body>
-        @Header()
-        @Main()
-        @Footer()
-    </body>
-    </html>
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ title }</title>
+			<link rel="stylesheet" href="/static/css/main.css"/>
+			<!-- import alpinejs -->
+            <script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.12.2/dist/cdn.min.js"></script> <!-- AJAX -->
+			<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> <!-- AlpineJS -->
+            <!-- import own logic -->
+            <script src="/static/js/index.js"></script>
+		</head>
+		<body>
+			{ children... }
+		</body>
+	</html>
 }

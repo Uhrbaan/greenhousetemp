@@ -1,0 +1,16 @@
+package components
+
+templ Graph() {
+	<div x-data="tempGraph" x-init="init()">
+		<label for="duration-select">Choisissez une période</label>
+		<select name="duration-select" id="duration-select" x-model="duration" value="day" @change="fetchGraphData()">
+			<option value="day">1 Jour</option>
+			<option value="week">1 Semaine</option>
+			<option value="month">1 Mois</option>
+			<option value="year">1 Année</option>
+		</select>
+		<canvas id="temp-graph-chart"></canvas>
+		<!-- Charts.js -->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	</div>
+}

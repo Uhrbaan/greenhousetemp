@@ -59,9 +59,9 @@ func main() {
 	router := http.NewServeMux()
 	router.HandleFunc("GET /", app.HandleRoot)
 
-	router.HandleFunc("POST /data/", app.PostData)
-	router.HandleFunc("GET /data/latest/", app.GetLatest)
-	router.HandleFunc("GET /data/", app.GetRange) // </data/?from=date&to=date>
+	router.HandleFunc("POST /data", app.PostData)
+	router.HandleFunc("GET /data/latest", app.GetLatest)
+	router.HandleFunc("GET /data", app.GetRange) // </data/?from=date&to=date>
 
 	router.Handle("GET /static/", http.StripPrefix("/static/", staticFileServer))
 
