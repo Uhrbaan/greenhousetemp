@@ -24,11 +24,11 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="16"
-     inkscape:cx="608.09375"
-     inkscape:cy="456.125"
-     inkscape:window-width="2560"
-     inkscape:window-height="1371"
+     inkscape:zoom="4"
+     inkscape:cx="540.25"
+     inkscape:cy="423.25"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -120,7 +120,10 @@
        x="-164.33496"
        y="-127.03457"
        ry="0"
-       transform="scale(-1)" />
+       transform="scale(-1)"
+       inkscape:export-filename="temperature.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        d="m 156.27864,98.478173 v 30.313397 h 9.51724 V 98.478173 Z m 4.75836,1.756477 c 0.58035,-3.2e-4 1.0509,0.47023 1.05058,1.05059 v 19.98224 c 1.16069,0.43713 1.92911,1.54766 1.92908,2.78794 7e-5,1.64536 -1.33378,2.97922 -2.97914,2.97915 -1.64537,7e-5 -2.97922,-1.33378 -2.97915,-2.97915 -1.7e-4,-1.2406 0.76853,-2.35143 1.9296,-2.78846 v -19.98172 c -3.2e-4,-0.57976 0.46928,-1.05005 1.04903,-1.05059 z"
        style="fill:#ffffff;stroke-width:1.00529;stroke-linecap:round;stroke-linejoin:round"

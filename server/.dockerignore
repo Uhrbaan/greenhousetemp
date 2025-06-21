@@ -1,0 +1,18 @@
+# Go binaries and object files
+*.exe
+*.o
+*.obj
+*.test
+*.prof
+
+# IDE and editor files
+.idea/
+.vscode/
+.DS_Store
+
+# Logs and runtime data
+*.log
+*.tmp
+
+# SQLite database file
+*.db
