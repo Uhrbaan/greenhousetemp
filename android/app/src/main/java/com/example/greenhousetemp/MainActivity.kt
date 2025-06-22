@@ -12,7 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.greenhousetemp.ui.theme.GreenhouseTempTheme
 import androidx.compose.ui.unit.dp
@@ -21,6 +20,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.LaunchedEffect
@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -59,16 +58,15 @@ fun InformationCard(title: String, description: String, modifier: Modifier = Mod
     ) {
         Text(
             text = title,
-            modifier.padding(bottom = 8.dp),
-            fontSize = 48.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.DarkGray
+            modifier = modifier.padding(bottom = 8.dp),
+            style = MaterialTheme.typography.displayMedium,
+            color = MaterialTheme.colorScheme.primary,
         )
         Text(
             text = description,
             fontSize = 64.sp,
             fontWeight = FontWeight.Thin,
-            color = Color.DarkGray
+            color = MaterialTheme.colorScheme.primary,
         )
     }
 }
@@ -85,7 +83,7 @@ fun InformationPage(modifier: Modifier = Modifier) {
     val apiService = remember { GreenhouseTempAPIService() }
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // chech every five seconds in a coroutine
+    // check every five seconds in a coroutine
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             while (isActive) {
@@ -118,12 +116,10 @@ fun InformationPage(modifier: Modifier = Modifier) {
     }
 }
 
-
-
 @Composable
 fun MainScreen(defaultPage: Int = 0) {
-    var selectedItem = defaultPage
-    val items = listOf("Home", "History", "Settings")
+    var selectedItem by remember { mutableStateOf(defaultPage) }
+    val items = listOf("Maison", "Historique", "Paramètres")
     val icons = listOf(Icons.Filled.Home, Icons.Filled.DateRange, Icons.Filled.Settings)
 
     Scaffold(
@@ -143,14 +139,8 @@ fun MainScreen(defaultPage: Int = 0) {
     ) { innerPadding ->
         when (selectedItem) {
             0 -> InformationPage()
-            1 -> Text(text = "Work in Progress", modifier = Modifier.padding(innerPadding))
-            2 -> Text(text = "Work in Progress", modifier = Modifier.padding(innerPadding))
+            1 -> Text(text = "Work in Progress: History", modifier = Modifier.padding(innerPadding))
+            2 -> SettingsPage(Modifier.padding(innerPadding))
         }
     }
-}
-
-@Preview(showBackground = false, device = Devices.PIXEL_5)
-@Composable
-fun MainScreenPreview() {
-    MainScreen(defaultPage = 0)
 }

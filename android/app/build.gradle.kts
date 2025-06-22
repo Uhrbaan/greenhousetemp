@@ -70,4 +70,6 @@ dependencies {
 // Coroutine Lifecycle Scopes (to manage coroutines that tie to the UI lifecycle)
     implementation(libs.androidx.lifecycle.runtime.ktx.v281) // Already have this
     implementation(libs.androidx.lifecycle.runtime.compose) // Important for Composables
+
+    implementation(libs.androidx.datastore.preferences) // Check for the latest version
 }
