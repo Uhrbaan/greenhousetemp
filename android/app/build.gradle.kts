@@ -72,4 +72,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose) // Important for Composables
 
     implementation(libs.androidx.datastore.preferences) // Check for the latest version
+
+    // Worker in background
+    implementation(libs.androidx.work.runtime.ktx)
+
 }
