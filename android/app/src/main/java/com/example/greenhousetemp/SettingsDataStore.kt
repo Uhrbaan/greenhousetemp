@@ -23,12 +23,14 @@ class SettingsDataStore(private val context: Context) {
     // Define Preference Keys (these are type-safe keys)
     companion object {
         val API_URL_KEY = stringPreferencesKey("api_url")
+        val PORT_KEY = intPreferencesKey("port")
         val REFRESH_INTERVAL_KEY = intPreferencesKey("refresh_interval_minutes")
         val COLD_LIMIT_KEY = floatPreferencesKey("cold_limit_celsius")
         val HOT_LIMIT_KEY = floatPreferencesKey("hot_limit_celsius")
 
         // Default values
         const val DEFAULT_API_URL = "http://192.168.1.121"
+        const val DEFAULT_PORT = 8080
         const val DEFAULT_REFRESH_INTERVAL = 5 // minutes
         const val DEFAULT_COLD_LIMIT = 15.0f // °C
         const val DEFAULT_HOT_LIMIT = 35.0f // °C
@@ -44,6 +46,17 @@ class SettingsDataStore(private val context: Context) {
     suspend fun saveApiUrl(apiUrl: String) {
         context.dataStore.edit { preferences ->
             preferences[API_URL_KEY] = apiUrl
+        }
+    }
+
+    val portFlow: Flow<Int> = context.dataStore.data
+        .map { preferences ->
+            preferences[PORT_KEY] ?: DEFAULT_PORT
+        }
+
+    suspend fun savePort(port: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PORT_KEY] = port
         }
     }
 

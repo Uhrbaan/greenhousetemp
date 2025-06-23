@@ -21,6 +21,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             initialValue = SettingsDataStore.DEFAULT_API_URL // Initial value before first emission
         )
 
+    val port: StateFlow<Int> = settingsDataStore.portFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = SettingsDataStore.DEFAULT_PORT
+        )
+
     val refreshInterval: StateFlow<Int> = settingsDataStore.refreshIntervalFlow
         .stateIn(
             viewModelScope,
@@ -71,23 +78,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             viewModelScope.launch {
                 settingsDataStore.saveHotLimit(it)
             }
-        }
-    }
-
-    // Optional: If you have a "Save All" button
-    fun saveAllSettings(
-        apiUrl: String,
-        refreshIntervalStr: String,
-        coldLimitStr: String,
-        hotLimitStr: String
-    ) {
-        val refreshInterval =
-            refreshIntervalStr.toIntOrNull() ?: SettingsDataStore.DEFAULT_REFRESH_INTERVAL
-        val coldLimit = coldLimitStr.toFloatOrNull() ?: SettingsDataStore.DEFAULT_COLD_LIMIT
-        val hotLimit = hotLimitStr.toFloatOrNull() ?: SettingsDataStore.DEFAULT_HOT_LIMIT
-
-        viewModelScope.launch {
-            settingsDataStore.saveAllSettings(apiUrl, refreshInterval, coldLimit, hotLimit)
         }
     }
 }
